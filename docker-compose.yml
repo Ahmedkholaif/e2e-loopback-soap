@@ -139,22 +139,34 @@ services:
   #   volumes: 
   #     - court-mongo-data:/bitnami
 
-  # portal-esb:
-  #   image: wslph/mule:4.2.2-ee
-  #   volumes:
-  #     - ./portal-app:/opt/mule/apps
-  #     - /home/ahmed/.gnupg:/root/.gnupg
-  #   networks:
-  #     - proxy-network
-  #   ports:
-  #     - 9091:9091
-  #   environment: 
-  #     - PROXY_IP=10.0.40.31
-  #     - SDB_KEY_FP=BEC02C1B9946A93D
-  #     - TRAFFIC_KEY_FP=BEC02C1B9946A93D
-  #     - COURT_KEY_FP=BEC02C1B9946A93D
-  #     - PORTAL_KEY_FP=BEC02C1B9946A93D
-  #     - PORTAL_PASSPHRASE=123456
+  portal-esb:
+    build:
+      context: ./portal-app
+      dockerfile: Dockerfile
+    depends_on: 
+      - traffic-esb
+      - sdb-esb
+      - court-esb
+    volumes:
+      - ./portal-app:/portal-app
+      # - /home/ahmed/.gnupg:/root/.gnupg
+    networks:
+      # - proxy-network
+      - traffic-network
+      - court-network
+      - sdb-network
+    ports:
+      - 9091:3000
+    environment: 
+      - SDB_URL=http://sdb-esb:3000
+      - TRAFFIC_URL=http://traffic-esb:3000
+      - COURT_URL=http://court-esb:3000
+      # - PROXY_IP=10.0.40.31
+      # - SDB_KEY_FP=BEC02C1B9946A93D
+      # - TRAFFIC_KEY_FP=BEC02C1B9946A93D
+      # - COURT_KEY_FP=BEC02C1B9946A93D
+      # - PORTAL_KEY_FP=BEC02C1B9946A93D
+      # - PORTAL_PASSPHRASE=123456
   
   sdb-esb:
     build: 

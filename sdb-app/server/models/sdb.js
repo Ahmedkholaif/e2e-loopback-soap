@@ -12,34 +12,14 @@ module.exports = function(Traffic) {
     });
   };
 
-  // External PeriodTable WebService operation exposed as REST APIs through LoopBack
-  // Traffic.getAtomicweight = function(elementName, callback) {
-  //   Traffic.GetAtomicWeight({ElementName: elementName || 'Copper'}, function (err, response) {
-  //     var result = response;
-  //     callback(err, result);
-  //   });
-  // }
-
   // Map to REST/HTTP
   Traffic.remoteMethod(
       'GetPlateNumber', {
         accepts: [
-          {arg: 'nationalId', type: 'string', required: true,
-            http: {source: 'query'}},
+          {arg: 'nationalId', type: 'string', required: true},
         ],
         returns: {arg: 'result', type: 'object', root: true},
-        http: {verb: 'get', path: '/GetPlateNumber'},
+        http: {verb: 'post', path: '/GetPlateNumber'},
       }
   );
-
-  // Traffic.remoteMethod(
-  //     'getAtomicweight', {
-  //       accepts: [
-  //         {arg: 'elementName', type: 'string', required: true,
-  //           http: {source: 'query'}}
-  //       ],
-  //       returns: {arg: 'result', type: 'object', root: true},
-  //       http: {verb: 'get', path: '/GetAtomicWeight'}
-  //   }
-  // );
 };
