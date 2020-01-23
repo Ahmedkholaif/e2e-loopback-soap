@@ -7,12 +7,13 @@ module.exports = (Portal)=>{
 
     console.log({nationalId})
     const body = {nationalId};
-    const sdbResponse= await axios.post(`${process.env.SDB_URL}/api/Sdbs/GetPlateNumber`, body);
+    const sdbResponse= await axios.post(`${process.env.PROXY_IP}/sdb/GetPlateNumber`, body);
 
     const {plateNumber} = sdbResponse.data;
+    console.log({sdbResponse})
     // send two req to traffic and court to get plateNumber details
-    const {data:courtData} = await axios.post(`${process.env.COURT_URL}/api/Courts/CheckCar`,{plateNumber});
-    const {data: trafficData} = await axios.post(`${process.env.TRAFFIC_URL}/api/traffic/CheckCar`,{plateNumber});
+    const {data:courtData} = await axios.post(`${process.env.PROXY_IP}/court/CheckCar`,{plateNumber});
+    const {data: trafficData} = await axios.post(`${process.env.PROXY_IP}/traffic/CheckCar`,{plateNumber});
     return({courtData,trafficData})
   };
 

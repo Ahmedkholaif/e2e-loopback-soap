@@ -1,86 +1,86 @@
 version: '2.4'
 
 services: 
-  # kong-database:
-  #   image: postgres:9.6.2-alpine
-  #   healthcheck:
-  #     test: ["CMD-SHELL", "pg_isready -U postgres"]
-  #     interval: 10s
-  #     timeout: 5s
-  #     retries: 5
-  #   environment: 
-  #     - POSTGRES_USER=kong
-  #     - POSTGRES_DB=kong
-  #     - POSTGRES_PASSWORD=nwnj72VFxh7ttjXcJBPP
-  #   networks: 
-  #     - kong-database-network
-  #   volumes: 
-  #     - kong-data:/var/lib/postgresql/data
+  kong-database:
+    image: postgres:9.6.2-alpine
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    environment: 
+      - POSTGRES_USER=kong
+      - POSTGRES_DB=kong
+      - POSTGRES_PASSWORD=nwnj72VFxh7ttjXcJBPP
+    networks: 
+      - kong-database-network
+    volumes: 
+      - kong-data:/var/lib/postgresql/data
 
-  # kong-migrations:
-  #   image: kong:alpine
-  #   environment: 
-  #     - KONG_DATABASE=postgres
-  #     - KONG_PG_HOST=kong-database
-  #     - KONG_PG_PASSWORD=nwnj72VFxh7ttjXcJBPP
-  #   depends_on: 
-  #     kong-database:
-  #       condition: service_healthy
-  #   networks: 
-  #     - kong-database-network
-  #   command: kong migrations bootstrap
+  kong-migrations:
+    image: kong:alpine
+    environment: 
+      - KONG_DATABASE=postgres
+      - KONG_PG_HOST=kong-database
+      - KONG_PG_PASSWORD=nwnj72VFxh7ttjXcJBPP
+    depends_on: 
+      kong-database:
+        condition: service_healthy
+    networks: 
+      - kong-database-network
+    command: kong migrations bootstrap
 
-  # kong:
-  #   image: kong:alpine
-  #   environment: 
-  #     - KONG_DATABASE=postgres
-  #     - KONG_PG_HOST=kong-database
-  #     - KONG_PG_PASSWORD=nwnj72VFxh7ttjXcJBPP
-  #     - KONG_PROXY_ACCESS_LOG=/dev/stdout
-  #     - KONG_ADMIN_ACCESS_LOG=/dev/stdout
-  #     - KONG_PROXY_ERROR_LOG=/dev/stderr
-  #     - KONG_ADMIN_ERROR_LOG=/dev/stderr
-  #     - KONG_ADMIN_LISTEN=0.0.0.0:8001, 0.0.0.0:8444 ssl
-  #   ports:
-  #     - 9000:8000
-  #   networks: 
-  #     - proxy-network
-  #     - kong-network
-  #     - kong-database-network
-  #   depends_on: 
-  #     kong-database:
-  #       condition: service_healthy
-  #     kong-migrations:
-  #       condition: service_started
+  kong:
+    image: kong:alpine
+    environment: 
+      - KONG_DATABASE=postgres
+      - KONG_PG_HOST=kong-database
+      - KONG_PG_PASSWORD=nwnj72VFxh7ttjXcJBPP
+      - KONG_PROXY_ACCESS_LOG=/dev/stdout
+      - KONG_ADMIN_ACCESS_LOG=/dev/stdout
+      - KONG_PROXY_ERROR_LOG=/dev/stderr
+      - KONG_ADMIN_ERROR_LOG=/dev/stderr
+      - KONG_ADMIN_LISTEN=0.0.0.0:8001, 0.0.0.0:8444 ssl
+    ports:
+      - 9000:8000
+    networks: 
+      - proxy-network
+      - kong-network
+      - kong-database-network
+    depends_on: 
+      kong-database:
+        condition: service_healthy
+      kong-migrations:
+        condition: service_started
 
-  # konga-prepare:
-  #   image: pantsel/konga:next
-  #   command: "-c prepare -a postgres -u postgresql://kong:nwnj72VFxh7ttjXcJBPP@kong-database:5432/konga_db"
-  #   networks: 
-  #     - kong-database-network
-  #   depends_on: 
-  #     kong-database:
-  #       condition: service_healthy
+  konga-prepare:
+    image: pantsel/konga:next
+    command: "-c prepare -a postgres -u postgresql://kong:nwnj72VFxh7ttjXcJBPP@kong-database:5432/konga_db"
+    networks: 
+      - kong-database-network
+    depends_on: 
+      kong-database:
+        condition: service_healthy
 
-  # konga:
-  #   image: pantsel/konga:next
-  #   networks: 
-  #     - kong-network
-  #     - kong-database-network
-  #   environment: 
-  #     - DB_ADAPTER=postgres
-  #     - DB_HOST=kong-database
-  #     - DB_PASSWORD=nwnj72VFxh7ttjXcJBPP
-  #     - DB_USER=kong
-  #     - TOKEN_SECRET=km1GUr4RkcQD7DewhJPNXrCuZwcKmqjb
-  #     - DB_DATABASE=konga_db
-  #   ports: 
-  #     - 1338:1337
-  #   depends_on: 
-  #     kong-database:
-  #       condition: service_healthy
-  #     konga-prepare:
-  #       condition: service_started
+  konga:
+    image: pantsel/konga:next
+    networks: 
+      - kong-network
+      - kong-database-network
+    environment: 
+      - DB_ADAPTER=postgres
+      - DB_HOST=kong-database
+      - DB_PASSWORD=nwnj72VFxh7ttjXcJBPP
+      - DB_USER=kong
+      - TOKEN_SECRET=km1GUr4RkcQD7DewhJPNXrCuZwcKmqjb
+      - DB_DATABASE=konga_db
+    ports: 
+      - 1338:1337
+    depends_on: 
+      kong-database:
+        condition: service_healthy
+      konga-prepare:
+        condition: service_started
 
   # sdb-ga-mongodb:
   #   image: bitnami/mongodb:4.1.1
@@ -151,17 +151,17 @@ services:
       - ./portal-app:/portal-app
       # - /home/ahmed/.gnupg:/root/.gnupg
     networks:
-      # - proxy-network
+      - proxy-network
       - traffic-network
       - court-network
       - sdb-network
     ports:
       - 9091:3000
     environment: 
-      - SDB_URL=http://sdb-esb:3000
-      - TRAFFIC_URL=http://traffic-esb:3000
-      - COURT_URL=http://court-esb:3000
-      # - PROXY_IP=10.0.40.31
+      - SDB_URL=http://localhost:9000
+      - TRAFFIC_URL=http://localhost:9000
+      - COURT_URL=http://localhost:9000
+      - PROXY_IP=http://10.0.40.31:9000
       # - SDB_KEY_FP=BEC02C1B9946A93D
       # - TRAFFIC_KEY_FP=BEC02C1B9946A93D
       # - COURT_KEY_FP=BEC02C1B9946A93D
@@ -181,7 +181,7 @@ services:
       # - /home/ahmed/.gnupg:/root/.gnupg
     networks:
       - sdb-network
-      # - proxy-network
+      - proxy-network
     ports: 
       - 9092:3000
     environment: 
@@ -222,7 +222,7 @@ services:
       # - /home/ahmed/.gnupg:/root/.gnupg
     networks:
       - traffic-network
-      # - proxy-network
+      - proxy-network
     ports: 
       - 9093:3000
     environment: 
@@ -264,7 +264,7 @@ services:
       # - /home/ahmed/.gnupg:/root/.gnupg
     networks:
       - court-network
-      # - proxy-network
+      - proxy-network
     ports: 
       - 9094:3000
     environment: 
@@ -291,15 +291,15 @@ services:
     # envvironment:
 
 networks: 
-  # kong-network:
-  # kong-database-network:
+  kong-network:
+  kong-database-network:
   sdb-network:
   court-network:
   traffic-network:
-  # proxy-network:
+  proxy-network:
 
-# volumes: 
-  # kong-data:
+volumes: 
+  kong-data:
   # sdb-mongo-data:
   # traffic-mongo-data:
   # court-mongo-data:
