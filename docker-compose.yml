@@ -1,0 +1,293 @@
+version: '2.4'
+
+services: 
+  # kong-database:
+  #   image: postgres:9.6.2-alpine
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U postgres"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #   environment: 
+  #     - POSTGRES_USER=kong
+  #     - POSTGRES_DB=kong
+  #     - POSTGRES_PASSWORD=nwnj72VFxh7ttjXcJBPP
+  #   networks: 
+  #     - kong-database-network
+  #   volumes: 
+  #     - kong-data:/var/lib/postgresql/data
+
+  # kong-migrations:
+  #   image: kong:alpine
+  #   environment: 
+  #     - KONG_DATABASE=postgres
+  #     - KONG_PG_HOST=kong-database
+  #     - KONG_PG_PASSWORD=nwnj72VFxh7ttjXcJBPP
+  #   depends_on: 
+  #     kong-database:
+  #       condition: service_healthy
+  #   networks: 
+  #     - kong-database-network
+  #   command: kong migrations bootstrap
+
+  # kong:
+  #   image: kong:alpine
+  #   environment: 
+  #     - KONG_DATABASE=postgres
+  #     - KONG_PG_HOST=kong-database
+  #     - KONG_PG_PASSWORD=nwnj72VFxh7ttjXcJBPP
+  #     - KONG_PROXY_ACCESS_LOG=/dev/stdout
+  #     - KONG_ADMIN_ACCESS_LOG=/dev/stdout
+  #     - KONG_PROXY_ERROR_LOG=/dev/stderr
+  #     - KONG_ADMIN_ERROR_LOG=/dev/stderr
+  #     - KONG_ADMIN_LISTEN=0.0.0.0:8001, 0.0.0.0:8444 ssl
+  #   ports:
+  #     - 9000:8000
+  #   networks: 
+  #     - proxy-network
+  #     - kong-network
+  #     - kong-database-network
+  #   depends_on: 
+  #     kong-database:
+  #       condition: service_healthy
+  #     kong-migrations:
+  #       condition: service_started
+
+  # konga-prepare:
+  #   image: pantsel/konga:next
+  #   command: "-c prepare -a postgres -u postgresql://kong:nwnj72VFxh7ttjXcJBPP@kong-database:5432/konga_db"
+  #   networks: 
+  #     - kong-database-network
+  #   depends_on: 
+  #     kong-database:
+  #       condition: service_healthy
+
+  # konga:
+  #   image: pantsel/konga:next
+  #   networks: 
+  #     - kong-network
+  #     - kong-database-network
+  #   environment: 
+  #     - DB_ADAPTER=postgres
+  #     - DB_HOST=kong-database
+  #     - DB_PASSWORD=nwnj72VFxh7ttjXcJBPP
+  #     - DB_USER=kong
+  #     - TOKEN_SECRET=km1GUr4RkcQD7DewhJPNXrCuZwcKmqjb
+  #     - DB_DATABASE=konga_db
+  #   ports: 
+  #     - 1338:1337
+  #   depends_on: 
+  #     kong-database:
+  #       condition: service_healthy
+  #     konga-prepare:
+  #       condition: service_started
+
+  # sdb-ga-mongodb:
+  #   image: bitnami/mongodb:4.1.1
+  #   environment: 
+  #     - MONGODB_PASSWORD=6G8RvW5dyxwrUUM4
+  #     - MONGODB_USERNAME=sdb
+  #     - MONGODB_DATABASE=sdb
+  #     - MONGODB_ROOT_PASSWORD=SsfTDTTf8tkzeaGx
+  #     - MONGODB_PORT_NUMBER=27017
+  #   healthcheck:
+  #     test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+  #     interval: 10s
+  #     timeout: 3s
+  #     retries: 3
+  #     start_period: 60s
+  #   networks: 
+  #     - sdb-network
+  #   volumes: 
+  #     - sdb-mongo-data:/bitnami
+
+  # traffic-ga-mongodb:
+  #   image: bitnami/mongodb:4.1.1
+  #   environment: 
+  #     - MONGODB_PASSWORD=6G8RvW5dyxwrUUM4
+  #     - MONGODB_USERNAME=traffic
+  #     - MONGODB_DATABASE=traffic
+  #     - MONGODB_ROOT_PASSWORD=SsfTDTTf8tkzeaGx
+  #     - MONGODB_PORT_NUMBER=27017
+  #   healthcheck:
+  #     test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+  #     interval: 10s
+  #     timeout: 3s
+  #     retries: 3
+  #     start_period: 60s
+  #   networks: 
+  #    - traffic-network
+  #   volumes: 
+  #     - traffic-mongo-data:/bitnami
+
+  # court-ga-mongodb:
+  #   image: bitnami/mongodb:4.1.1
+  #   environment: 
+  #     - MONGODB_PASSWORD=6G8RvW5dyxwrUUM4
+  #     - MONGODB_USERNAME=court
+  #     - MONGODB_DATABASE=court
+  #     - MONGODB_ROOT_PASSWORD=SsfTDTTf8tkzeaGx
+  #     - MONGODB_PORT_NUMBER=27017
+  #   healthcheck:
+  #     test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+  #     interval: 10s
+  #     timeout: 3s
+  #     retries: 3
+  #     start_period: 60s
+  #   networks: 
+  #    - court-network
+  #   volumes: 
+  #     - court-mongo-data:/bitnami
+
+  # portal-esb:
+  #   image: wslph/mule:4.2.2-ee
+  #   volumes:
+  #     - ./portal-app:/opt/mule/apps
+  #     - /home/ahmed/.gnupg:/root/.gnupg
+  #   networks:
+  #     - proxy-network
+  #   ports:
+  #     - 9091:9091
+  #   environment: 
+  #     - PROXY_IP=10.0.40.31
+  #     - SDB_KEY_FP=BEC02C1B9946A93D
+  #     - TRAFFIC_KEY_FP=BEC02C1B9946A93D
+  #     - COURT_KEY_FP=BEC02C1B9946A93D
+  #     - PORTAL_KEY_FP=BEC02C1B9946A93D
+  #     - PORTAL_PASSPHRASE=123456
+  
+  sdb-esb:
+    build: 
+      context: ./sdb-app/
+      dockerfile: Dockerfile
+    depends_on: 
+      - sdb-soap
+      # sdb-ga-mongodb:
+      #   condition: service_healthy
+    volumes:
+      - ./sdb-app:/sdb-app
+      # - /home/ahmed/.gnupg:/root/.gnupg
+    networks:
+      - sdb-network
+      # - proxy-network
+    ports: 
+      - 9092:3000
+    environment: 
+      - NODE_ENV=development
+      - SOAP_URL=http://sdb-soap:8001/wsdl
+    #   - MONGO_URL=mongodb://sdb:6G8RvW5dyxwrUUM4@sdb-ga-mongodb:27017/sdb
+    #   - SDB_KEY_FP=BEC02C1B9946A93D
+    #   - PORTAL_KEY_FP=BEC02C1B9946A93D
+    #   - SDB_PASSPHRASE=123456
+
+  sdb-soap:
+    build: 
+      context: ./sdb-soap/
+      dockerfile: Dockerfile
+    # ports:
+      # - 8001:8001
+    # image: kholif/traffic-soap
+    container_name: sdb-soap
+    volumes:
+      - ./sdb-soap:/sdb-soap
+    networks:
+      - sdb-network
+    # ports:
+    # envvironment:
+
+  traffic-esb:
+    build: 
+      context: ./traffic-app/
+      dockerfile: Dockerfile
+    # image: kholif/traffic-app
+    container_name: traffic-app
+    depends_on: 
+      # traffic-ga-mongodb:
+      #   condition: service_healthy
+      - traffic-soap
+    volumes:
+      - ./traffic-app:/traffic-app
+      # - /home/ahmed/.gnupg:/root/.gnupg
+    networks:
+      - traffic-network
+      # - proxy-network
+    ports: 
+      - 9093:3000
+    environment: 
+      - NODE_ENV=development
+      - SOAP_URL=http://traffic-soap:8001/wsdl
+      # - MONGO_URL=mongodb://traffic:6G8RvW5dyxwrUUM4@traffic-ga-mongodb:27017/traffic
+      # - PUB_KEY_PATH=/root/.gnupg/pubring.gpg 
+      # - SEC_KEY_PATH=/root/.gnupg/secring.gpg 
+      # - TRAFFIC_KEY_FP=BEC02C1B9946A93D
+      # - TRAFFIC_PASSPHRASE=123456
+      # - PORTAL_KEY_FP=BEC02C1B9946A93D
+  
+  traffic-soap:
+    build: 
+      context: ./traffic-soap/
+      dockerfile: Dockerfile
+    # ports:
+      # - 8001:8001
+    # image: kholif/traffic-soap
+    container_name: traffic-soap
+    volumes:
+      - ./traffic-soap:/traffic-soap
+    networks:
+      - traffic-network
+    # ports:
+    # envvironment:
+
+
+  court-esb:
+    build: 
+      context: ./court-app/
+      dockerfile: Dockerfile
+    depends_on: 
+      - court-soap
+      # court-ga-mongodb:
+      #   condition: service_healthy
+    volumes:
+      - ./court-app:/court-app
+      # - /home/ahmed/.gnupg:/root/.gnupg
+    networks:
+      - court-network
+      # - proxy-network
+    ports: 
+      - 9094:3000
+    environment: 
+      - NODE_ENV=development
+      - SOAP_URL=http://court-soap:8001/wsdl
+    #   - MONGO_URL=mongodb://court:6G8RvW5dyxwrUUM4@court-ga-mongodb:27017/court
+    #   - COURT_KEY_FP=BEC02C1B9946A93D
+    #   - COURT_PASSPHRASE=123456
+    #   - PORTAL_KEY_FP=BEC02C1B9946A93D
+
+  court-soap:
+    build: 
+      context: ./court-soap/
+      dockerfile: Dockerfile
+    # ports:
+      # - 8001:8001
+    # image: kholif/traffic-soap
+    container_name: court-soap
+    volumes:
+      - ./court-soap:/court-soap
+    networks:
+      - court-network
+    # ports:
+    # envvironment:
+
+networks: 
+  # kong-network:
+  # kong-database-network:
+  sdb-network:
+  court-network:
+  traffic-network:
+  # proxy-network:
+
+# volumes: 
+  # kong-data:
+  # sdb-mongo-data:
+  # traffic-mongo-data:
+  # court-mongo-data:

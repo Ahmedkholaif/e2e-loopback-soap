@@ -1,0 +1,61 @@
+[{
+  "plateNumber": "709263",
+  "make": "Lincoln",
+  "model": "Navigator L",
+  "color": "Aquamarine",
+  "year": 2007
+}, {
+  "plateNumber": "875963",
+  "make": "Chrysler",
+  "model": "300",
+  "color": "Khaki",
+  "year": 2010
+}, {
+  "plateNumber": "975436",
+  "make": "Mitsubishi",
+  "model": "Mirage",
+  "color": "Turquoise",
+  "year": 1996
+}, {
+  "plateNumber": "980417",
+  "make": "Chevrolet",
+  "model": "Tahoe",
+  "color": "Orange",
+  "year": 1998
+}, {
+  "plateNumber": "298073",
+  "make": "Honda",
+  "model": "Accord",
+  "color": "Khaki",
+  "year": 1987
+}, {
+  "plateNumber": "072181",
+  "make": "BMW",
+  "model": "X5",
+  "color": "Aquamarine",
+  "year": 2000
+}, {
+  "plateNumber": "188955",
+  "make": "Nissan",
+  "model": "Altima",
+  "color": "Indigo",
+  "year": 2003
+}, {
+  "plateNumber": "655004",
+  "make": "Pontiac",
+  "model": "Turbo Firefly",
+  "color": "Blue",
+  "year": 1988
+}, {
+  "plateNumber": "200647",
+  "make": "GMC",
+  "model": "Envoy XL",
+  "color": "Purple",
+  "year": 2005
+}, {
+  "plateNumber": "928094",
+  "make": "Volvo",
+  "model": "XC90",
+  "color": "Orange",
+  "year": 2011
+}]

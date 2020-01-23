@@ -1,0 +1,40 @@
+<definitions
+  targetNamespace = "http://www.examples.com/wsdl/SDB_Service.wsdl"
+  xmlns = "http://schemas.xmlsoap.org/wsdl/"
+  xmlns:soap = "http://schemas.xmlsoap.org/wsdl/soap/"
+  name = "SDB_Service"
+  xmlns:tns = "http://www.examples.com/wsdl/SDB_Service.wsdl"
+  xmlns:xsd = "http://www.w3.org/2001/XMLSchema" >
+   <message name = "GetPlateNumberRequest">
+      <part name = "plateNumber" type = "xsd:string"/>
+   </message>
+   <message name = "GetPlateNumberResponse">
+      <part name = "status" type = "xsd:string"/>
+   </message>
+   <portType name = "SDB_Data_PortType">
+      <operation name = "GetPlateNumber">
+         <input message = "tns:GetPlateNumberRequest"/>
+         <output message = "tns:GetPlateNumberResponse"/>
+      </operation>
+   </portType>
+   <binding name = "GetPlateNumber_Binding" type = "tns:SDB_Data_PortType">
+      <soap:binding style = "rpc"
+         transport = "http://schemas.xmlsoap.org/soap/http"/>
+      <operation name = "GetPlateNumber">
+         <soap:operation soapAction = "GetPlateNumber"/>
+         <input>
+            <soap:body encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/" namespace = "urn:examples:SDB_Service" use = "encoded"/>
+         </input>
+         <output>
+            <soap:body encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/" namespace = "urn:examples:SDB_Service" use = "encoded"/>
+         </output>
+      </operation>
+   </binding>
+   <service name = "SDB_Service">
+      <documentation>WSDL File for SDB_Service</documentation>
+      <port binding = "tns:GetPlateNumber_Binding" name = "SDB_Data_PortType">
+         <soap:address
+            location = "http://localhost:8001/wsdl" />
+      </port>
+   </service>
+</definitions>
