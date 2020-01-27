@@ -7,14 +7,21 @@ module.exports = (Portal)=>{
 
     console.log({nationalId})
     const body = {nationalId};
-    const sdbResponse= await axios.post(`${process.env.PROXY_IP}/sdb/GetPlateNumber`, body);
+    const sdbResponse= await axios.post(`${process.env.PROXY_URL}/sdb/api/Sdbs/GetPlateNumber`, body);
 
     const {plateNumber} = sdbResponse.data;
-    console.log({sdbResponse})
+    if(!plateNumber) return {Error:'No Plate Number For the specified National ID'}
     // send two req to traffic and court to get plateNumber details
-    const {data:courtData} = await axios.post(`${process.env.PROXY_IP}/court/CheckCar`,{plateNumber});
-    const {data: trafficData} = await axios.post(`${process.env.PROXY_IP}/traffic/CheckCar`,{plateNumber});
-    return({courtData,trafficData})
+
+    try {
+      const [{data:courtData},{data: trafficData}] = await Promise.all([
+        axios.post(`${process.env.PROXY_URL}/court/api/Courts/CheckCar`,{plateNumber}),
+        axios.post(`${process.env.PROXY_URL}/traffic/api/traffic/CheckCar`,{plateNumber}),
+      ]);
+      return({courtData,trafficData})
+    } catch (error) {
+      return {error}      
+    }
   };
 
   Portal.remoteMethod(

@@ -43,6 +43,7 @@ services:
       - KONG_ADMIN_LISTEN=0.0.0.0:8001, 0.0.0.0:8444 ssl
     ports:
       - 9000:8000
+      - 9001:8001
     networks: 
       - proxy-network
       - kong-network
@@ -158,10 +159,10 @@ services:
     ports:
       - 9091:3000
     environment: 
-      - SDB_URL=http://localhost:9000
-      - TRAFFIC_URL=http://localhost:9000
-      - COURT_URL=http://localhost:9000
-      - PROXY_IP=http://10.0.40.31:9000
+      # - SDB_URL=http://localhost:9000
+      # - TRAFFIC_URL=http://localhost:9000
+      # - COURT_URL=http://localhost:9000
+      - PROXY_URL=http://kong:8000
       # - SDB_KEY_FP=BEC02C1B9946A93D
       # - TRAFFIC_KEY_FP=BEC02C1B9946A93D
       # - COURT_KEY_FP=BEC02C1B9946A93D
@@ -182,8 +183,8 @@ services:
     networks:
       - sdb-network
       - proxy-network
-    ports: 
-      - 9092:3000
+    # ports: 
+    #   - 9092:3000
     environment: 
       - NODE_ENV=development
       - SOAP_URL=http://sdb-soap:8001/wsdl
@@ -223,8 +224,8 @@ services:
     networks:
       - traffic-network
       - proxy-network
-    ports: 
-      - 9093:3000
+    # ports: 
+    #   - 9093:3000
     environment: 
       - NODE_ENV=development
       - SOAP_URL=http://traffic-soap:8001/wsdl
@@ -265,8 +266,8 @@ services:
     networks:
       - court-network
       - proxy-network
-    ports: 
-      - 9094:3000
+    # ports: 
+    #   - 9094:3000
     environment: 
       - NODE_ENV=development
       - SOAP_URL=http://court-soap:8001/wsdl
