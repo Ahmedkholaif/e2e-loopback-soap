@@ -1,22 +1,30 @@
 'use strict';
+const {encrypt,decrypt} = require('../helpers/encryption');
 
-module.exports = function(Traffic) {
+module.exports = function(Sdb) {
+  
+  Sdb.beforeRemote('**',async(ctx)=>{
+    const {body:{payload}} = ctx.req;
+    const data = await decrypt(payload)
+    ctx.req.body = JSON.parse(data);
+  })
+  
+  Sdb.afterRemote('**',async(ctx)=>{
+    ctx.result = await encrypt(ctx.result);
+  })
+  
+  
   // External PeriodTable WebService operation exposed as REST APIs through LoopBack
-  Traffic.GetPlateNumber = function(nationalId, cb) {
-    console.log({nationalId});
-    console.log('kkkkkk;k');
-    Traffic.GetPlateNumber(nationalId, function(err, response) {
-      var result = response;
-      console.log('kkkkkkk');
-      cb(err, result);
-    });
+  Sdb.getPlateNumber = function(ctx, cb) {
+    const {nationalId} = ctx.req.body;
+    Sdb.GetPlateNumber(nationalId, cb);
   };
 
   // Map to REST/HTTP
-  Traffic.remoteMethod(
-      'GetPlateNumber', {
+  Sdb.remoteMethod(
+      'getPlateNumber', {
         accepts: [
-          {arg: 'nationalId', type: 'string', required: true},
+          {arg: 'ctx', type: 'object', http: {source: 'context'}},
         ],
         returns: {arg: 'result', type: 'object', root: true},
         http: {verb: 'post', path: '/GetPlateNumber'},

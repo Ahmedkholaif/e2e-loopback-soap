@@ -7,7 +7,7 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "start": "node .",
+    "start": "nodemon .",
     "dev": "nodemon .",
     "posttest": "npm run lint && npm audit"
   },
@@ -19,14 +19,15 @@
     "loopback-boot": "^2.6.5",
     "loopback-component-explorer": "^6.2.0",
     "loopback-connector-soap": "^4.3.0",
+    "openpgp": "^4.8.1",
     "serve-favicon": "^2.0.1",
     "strong-error-handler": "^3.0.0"
   },
   "devDependencies": {
+    "concurrently": "^4.1.1",
     "eslint": "^3.17.1",
     "eslint-config-loopback": "^8.0.0",
-    "concurrently": "^4.1.1",
-    "nodemon": "^1.19.1"
+    "nodemon": "^1.19.4"
   },
   "repository": {
     "type": "",

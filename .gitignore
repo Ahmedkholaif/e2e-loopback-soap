@@ -16,4 +16,6 @@
 .strong-pm
 coverage
 node_modules
+node_modules_lb
+node_modules_soap
 npm-debug.log

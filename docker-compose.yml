@@ -148,8 +148,9 @@ services:
       - traffic-esb
       - sdb-esb
       - court-esb
-    volumes:
-      - ./portal-app:/portal-app
+    # volumes:
+    #   - ./portal-app:/portal-app
+      # - ./node_modules:/portal-app/node_modules
       # - /home/ahmed/.gnupg:/root/.gnupg
     networks:
       - proxy-network
@@ -158,6 +159,7 @@ services:
       - sdb-network
     ports:
       - 9091:3000
+      - 8888:9229
     environment: 
       # - SDB_URL=http://localhost:9000
       # - TRAFFIC_URL=http://localhost:9000
@@ -177,13 +179,15 @@ services:
       - sdb-soap
       # sdb-ga-mongodb:
       #   condition: service_healthy
-    volumes:
-      - ./sdb-app:/sdb-app
+    # volumes:
+    #   - ./sdb-app:/sdb-app
+      # - ./node_modules_lb:/sdb-app/node_modules
       # - /home/ahmed/.gnupg:/root/.gnupg
     networks:
       - sdb-network
       - proxy-network
-    # ports: 
+    ports: 
+      - 9999:9229
     #   - 9092:3000
     environment: 
       - NODE_ENV=development
@@ -201,8 +205,9 @@ services:
       # - 8001:8001
     # image: kholif/traffic-soap
     container_name: sdb-soap
-    volumes:
-      - ./sdb-soap:/sdb-soap
+    # volumes:
+    #   - ./sdb-soap:/sdb-soap
+      # - ./node_modules_soap:/sdb-soap/node_modules
     networks:
       - sdb-network
     # ports:
@@ -218,8 +223,9 @@ services:
       # traffic-ga-mongodb:
       #   condition: service_healthy
       - traffic-soap
-    volumes:
-      - ./traffic-app:/traffic-app
+    # volumes:
+    #   - ./traffic-app:/traffic-app
+      # - ./node_modules_lb:/traffic-app/node_modules
       # - /home/ahmed/.gnupg:/root/.gnupg
     networks:
       - traffic-network
@@ -244,8 +250,9 @@ services:
       # - 8001:8001
     # image: kholif/traffic-soap
     container_name: traffic-soap
-    volumes:
-      - ./traffic-soap:/traffic-soap
+    # volumes:
+    #   - ./traffic-soap:/traffic-soap
+      # - ./node_modules_soap:/traffic-soap/node_modules
     networks:
       - traffic-network
     # ports:
@@ -256,12 +263,14 @@ services:
     build: 
       context: ./court-app/
       dockerfile: Dockerfile
+    # command: 'ls'
     depends_on: 
       - court-soap
       # court-ga-mongodb:
       #   condition: service_healthy
-    volumes:
-      - ./court-app:/court-app
+    # volumes:
+    #   - ./court-app:/court-app
+      # - ./node_modules_lb:/court-app/node_modules
       # - /home/ahmed/.gnupg:/root/.gnupg
     networks:
       - court-network
@@ -272,7 +281,7 @@ services:
       - NODE_ENV=development
       - SOAP_URL=http://court-soap:8001/wsdl
     #   - MONGO_URL=mongodb://court:6G8RvW5dyxwrUUM4@court-ga-mongodb:27017/court
-    #   - COURT_KEY_FP=BEC02C1B9946A93D
+    #   - COURT_KEY_FP=BEC02CBEC02C1B9946A93D1B9946A93D
     #   - COURT_PASSPHRASE=123456
     #   - PORTAL_KEY_FP=BEC02C1B9946A93D
 
@@ -284,8 +293,9 @@ services:
       # - 8001:8001
     # image: kholif/traffic-soap
     container_name: court-soap
-    volumes:
-      - ./court-soap:/court-soap
+    # volumes:
+    #   - ./court-soap:/court-soap
+      # - ./node_modules_soap:/court-soap/node_modules
     networks:
       - court-network
     # ports:
